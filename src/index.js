@@ -1,13 +1,30 @@
-import React from 'react';
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, Text, StyleSheet, StatusBar, FlatList } from 'react-native';
+
+import api from './services/api';
 
 export default function App() {
+
+    const [projects, setProjects] = useState([]);
+
+    useEffect(() => {
+        api.get('projects').then(response => {
+            setProjects(response.data)
+        });
+    }, []);
+
     return (
         <>
             <StatusBar barStyle="light-content" backgroundColor="#3c7168" />
-            <View style={styles.container}>
-                <Text style={styles.title}>Hello React Native</Text>
-            </View>
+            <SafeAreaView style={styles.container}>
+                <FlatList
+                    data={projects}
+                    keyExtractor={project => project.id}
+                    renderItem={({ item: project }) => (
+                        <Text style={styles.project}>{project.title}</Text>
+                    )}
+                />
+            </SafeAreaView>
         </>
     )
 }
@@ -16,13 +33,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#3c7168',
-        justifyContent: 'center',
-        alignItems: 'center'
     },
 
-    title: {
+    project: {
         color: '#f9f9fa',
-        fontSize: 28,
+        fontSize: 38,
         fontWeight: 'bold'
     }
 })
